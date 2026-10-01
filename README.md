@@ -17,6 +17,7 @@
 - 自动识别清单中的 `xx党支部`、`xx` 等占位符。
 - 复制最近同类型 DOCX 作为模板，避免重新定义页面和样式。
 - 提供清单、历史文档结构和字数检查脚本。
+- 提供 DOCX 页面、样式、字体、字距、行距和段距画像脚本。
 - 提供基于 JSON 规格的模板继承生成脚本。
 - 把模板残留、月份错误、命名错误和逐页渲染检查纳入质量门。
 
@@ -104,6 +105,28 @@ python scripts/build_docx_from_spec.py --spec spec.json
 - `--overwrite`：允许覆盖同名文件。
 - `--dry-run`：只校验规格，不写入 DOCX。
 
+### 剖析 DOCX 格式
+
+```bash
+python scripts/profile_docx_formatting.py \
+  --root <党建材料根目录> \
+  --month 6月 \
+  --month 7月 \
+  --month 8月 \
+  --include-source \
+  --json
+```
+
+脚本会输出：
+
+- 页面尺寸、方向、页边距、页眉页脚距离和文档网格。
+- 使用到的段落样式及其继承关系。
+- 有效字体、字号、加粗、颜色和字符间距。
+- 行距、段前段后、首行缩进和空段统计。
+- 按正式记录和学习原文分组的格式聚合结果。
+
+2026 年 6 至 8 月的实测汇总见 `references/word-format-profile-2026-06-08.md`。
+
 ## 依赖
 
 - Python 3.11+
@@ -122,9 +145,11 @@ party-building-monthly-docs/
 |-- agents/
 |   `-- openai.yaml
 |-- references/
-|   `-- writing-patterns.md
+|   |-- writing-patterns.md
+|   `-- word-format-profile-2026-06-08.md
 |-- scripts/
 |   |-- build_docx_from_spec.py
+|   |-- profile_docx_formatting.py
 |   `-- inspect_monthly_inputs.py
 |-- requirements.txt
 `-- LICENSE

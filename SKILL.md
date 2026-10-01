@@ -24,7 +24,7 @@ metadata:
 
 ## 工作流程
 
-1. 阅读 [references/writing-patterns.md](references/writing-patterns.md)，据此判断各类材料的正文结构、字数和合并规则。
+1. 阅读 [references/writing-patterns.md](references/writing-patterns.md) 和 [references/word-format-profile-2026-06-08.md](references/word-format-profile-2026-06-08.md)，据此判断各类材料的正文结构、字数、页面、字体、字距、行距、段距和合并规则。
 2. 盘点当前月文件夹：读取重点工作清单、当月原文材料，并找出最近 3 个月同类型历史记录。不要只按文件名猜测材料内容。
 3. 使用结构化解析读取 Excel，不要手工拼接表格文本。可运行：
 
@@ -32,7 +32,11 @@ metadata:
 python scripts/inspect_monthly_inputs.py --root <党建根目录> --details
 ```
 
-4. 对每种材料至少读取最近一个月同类型 DOCX 的正文、段落样式、页面设置、有效字体和中文字符数。若本月清单内容跨类型较多，分别取样，不要用一个模板覆盖所有文书。
+4. 对每种材料至少读取最近一个月同类型 DOCX 的正文、段落样式、页面设置、有效字体和中文字符数。若本月清单内容跨类型较多，分别取样，不要用一个模板覆盖所有文书。需要核对字体字号、字符间距、行距、段前段后、首行缩进和空段时，运行：
+
+```bash
+python scripts/profile_docx_formatting.py --root <党建根目录> --month <月份> --json
+```
 5. 生成交付计划，明确每项活动的输出文件名、模板来源、正文类型及合并关系。文件名使用清单主题，补齐缺失的月份或党支部名称时要与同批文件保持一致。
 6. 根据清单活动内容写正文。优先使用当月原文中的原话和事实摘要；历史记录只用于结构和语气，不机械复制往月内容。主题党日应结合当月节日或纪念日、近期学习内容和本单位业务场景展开。
 7. 为每份文档准备 JSON 规格，然后运行构建器：
@@ -56,10 +60,13 @@ python scripts/build_docx_from_spec.py --spec <spec.json>
 - 正文中不出现上一月或模板中的日期、课程序号、人物、活动名称或示例文本。
 - 常规会议和学习记录通常采用“学习内容记录 + 讨论发言摘要 + 3 人发言”；主题党日采用活动纪实；谈心谈话保留真实对话和谈话效果。
 - 文本长度以 [references/writing-patterns.md](references/writing-patterns.md) 为起点，以当前月相邻记录为主要校准依据。
+- 页面、样式、字体字号、字距、行距和段距以 [references/word-format-profile-2026-06-08.md](references/word-format-profile-2026-06-08.md) 为核对基线，以最近同类型 DOCX 的实际样式为最终依据。
 - 每个文件都能打开，ZIP 结构正常，全部页面已完成视觉检查。
 
 ## 支持资源
 
 - 写作模式、篇幅和段落结构：[references/writing-patterns.md](references/writing-patterns.md)
+- 6 至 8 月页面和 Word 样式画像：[references/word-format-profile-2026-06-08.md](references/word-format-profile-2026-06-08.md)
 - 清单及历史 DOCX 检查器：`scripts/inspect_monthly_inputs.py`
+- DOCX 页面、样式、字体、字距、行距和段距剖析器：`scripts/profile_docx_formatting.py`
 - 按 JSON 规格复制模板并生成 DOCX：`scripts/build_docx_from_spec.py`
