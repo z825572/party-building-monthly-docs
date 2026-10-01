@@ -17,6 +17,7 @@
 - 自动识别清单中的 `xx党支部`、`xx` 等占位符。
 - 复制最近同类型 DOCX 作为模板，避免重新定义页面和样式。
 - 提供清单、历史文档结构和字数检查脚本。
+- 从月度清单生成活动顺序、规范文件名和模板候选的交付计划。
 - 提供 DOCX 页面、样式、字体、字距、行距和段距画像脚本。
 - 提供基于 JSON 规格的模板继承生成脚本。
 - 把模板残留、月份错误、命名错误和逐页渲染检查纳入质量门。
@@ -85,7 +86,18 @@ python scripts/inspect_monthly_inputs.py \
         },
         {
           "style": "党建正文",
-          "text": "全体党员集中学习了……"
+          "text": "全体党员集中学习了……",
+          "line_spacing_pt": 31
+        },
+        {
+          "style": "党建正文",
+          "blank": true
+        },
+        {
+          "style": "党建正文",
+          "text": "讨论发言摘要：",
+          "bold": true,
+          "first_line_indent_pt": 0
         }
       ]
     }
@@ -104,6 +116,41 @@ python scripts/build_docx_from_spec.py --spec spec.json
 - `--output-dir`：覆盖 JSON 中的输出目录。
 - `--overwrite`：允许覆盖同名文件。
 - `--dry-run`：只校验规格，不写入 DOCX。
+
+段落支持 `style`、`text`、`blank`、`bold`、`italic`、`alignment`、`first_line_indent_pt`、`left_indent_pt`、`right_indent_pt`、`space_before_pt`、`space_after_pt`、`line_spacing_pt`、`page_break_before`、`keep_with_next` 和 `keep_together`。默认应让模板样式控制格式，只对确实需要差异的段落写直接格式。
+
+### 生成月度交付计划
+
+```bash
+python scripts/plan_monthly_docs.py \
+  --root <党建材料根目录> \
+  --month 9月 \
+  --branch-name <党支部名称> \
+  --lookback 3
+```
+
+计划会按清单行输出：
+
+- 活动顺序、类别、完成时间和清单行号。
+- 补齐党支部名称后的 DOCX 文件名。
+- 最近 3 个月中同类别、同次序的文件模板候选。
+- 无法从清单确定的 `xxxx` 主题和缺失模板警告。
+
+计划结果只用于生成前确认，最终输出目录不应保留计划 JSON。
+
+### 验收交付目录
+
+```bash
+python scripts/validate_delivery.py \
+  --directory <交付目录> \
+  --month 9月 \
+  --branch-name <党支部名称> \
+  --expected-count 6
+```
+
+验收器会检查文件数量、月份、党支部名称、`xxxx` 占位符、DOCX ZIP 完整性、文件能否重新打开和正文是否为空。它不替代逐页渲染检查。
+
+如果计划器输出了 JSON，可再传 `--plan <plan.json>`，验收器会同时核对缺失文件和计划外文件。
 
 ### 剖析 DOCX 格式
 
@@ -149,7 +196,9 @@ party-building-monthly-docs/
 |   `-- word-format-profile-2026-06-08.md
 |-- scripts/
 |   |-- build_docx_from_spec.py
+|   |-- plan_monthly_docs.py
 |   |-- profile_docx_formatting.py
+|   |-- validate_delivery.py
 |   `-- inspect_monthly_inputs.py
 |-- requirements.txt
 `-- LICENSE

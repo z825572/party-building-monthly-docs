@@ -37,15 +37,33 @@ python scripts/inspect_monthly_inputs.py --root <党建根目录> --details
 ```bash
 python scripts/profile_docx_formatting.py --root <党建根目录> --month <月份> --json
 ```
-5. 生成交付计划，明确每项活动的输出文件名、模板来源、正文类型及合并关系。文件名使用清单主题，补齐缺失的月份或党支部名称时要与同批文件保持一致。
+5. 生成交付计划，明确每项活动的输出文件名、模板来源、正文类型及合并关系。优先运行计划器，再人工校正清单中的 `xxxx` 主题、合并要求和特殊命名：
+
+```bash
+python scripts/plan_monthly_docs.py \
+  --root <党建根目录> \
+  --month <月份> \
+  --branch-name <党支部名称> \
+  --lookback 3
+```
+
+计划器会按清单行保留活动顺序、完成时间和统计出的活动数，输出规范化文件名及最近 3 个月的同类型模板候选。推荐模板仍要结合活动类别、次序和正文任务确认，不能只看最高分。
 6. 根据清单活动内容写正文。优先使用当月原文中的原话和事实摘要；历史记录只用于结构和语气，不机械复制往月内容。主题党日应结合当月节日或纪念日、近期学习内容和本单位业务场景展开。
-7. 为每份文档准备 JSON 规格，然后运行构建器：
+7. 为每份文档准备 JSON 规格。空段落必须写 `"blank": true`，不能伪造空格文本；只有模板样式无法覆盖时才使用 `line_spacing_pt`、`space_before_pt`、`space_after_pt`、`alignment`、`first_line_indent_pt` 等直接格式。然后运行构建器：
 
 ```bash
 python scripts/build_docx_from_spec.py --spec <spec.json>
 ```
 
-8. 先做结构检查，再逐页渲染检查。确认没有模板残留、错误月份、错误支部名称、空标题、丢失正文、错页和截断。渲染后必须查看每一页，不能只检查第一页。
+8. 先用交付验收器做结构检查，再逐页渲染检查。确认没有模板残留、错误月份、错误支部名称、空标题、丢失正文、错页和截断。渲染后必须查看每一页，不能只检查第一页。结构检查可运行：
+
+```bash
+python scripts/validate_delivery.py \
+  --directory <交付目录> \
+  --month <月份> \
+  --branch-name <党支部名称> \
+  --expected-count <文件数>
+```
 
 ## 文件命名
 
@@ -57,6 +75,7 @@ python scripts/build_docx_from_spec.py --spec <spec.json>
 ## 质量门
 
 - DOCX 应由最近一个同类型历史文件复制生成，且原有样式名称仍可解析。
+- 计划器推荐模板缺失、文件名仍含 `xxxx`、合并关系不明确或活动数量与清单不一致时，不得直接批量生成。
 - 正文中不出现上一月或模板中的日期、课程序号、人物、活动名称或示例文本。
 - 常规会议和学习记录通常采用“学习内容记录 + 讨论发言摘要 + 3 人发言”；主题党日采用活动纪实；谈心谈话保留真实对话和谈话效果。
 - 文本长度以 [references/writing-patterns.md](references/writing-patterns.md) 为起点，以当前月相邻记录为主要校准依据。
@@ -68,5 +87,7 @@ python scripts/build_docx_from_spec.py --spec <spec.json>
 - 写作模式、篇幅和段落结构：[references/writing-patterns.md](references/writing-patterns.md)
 - 6 至 8 月页面和 Word 样式画像：[references/word-format-profile-2026-06-08.md](references/word-format-profile-2026-06-08.md)
 - 清单及历史 DOCX 检查器：`scripts/inspect_monthly_inputs.py`
+- 月度清单、文件名和模板候选计划器：`scripts/plan_monthly_docs.py`
 - DOCX 页面、样式、字体、字距、行距和段距剖析器：`scripts/profile_docx_formatting.py`
 - 按 JSON 规格复制模板并生成 DOCX：`scripts/build_docx_from_spec.py`
+- 交付目录结构、命名、ZIP 和正文检查器：`scripts/validate_delivery.py`

@@ -1,4 +1,4 @@
 interface:
   display_name: "党建月度DOCX"
   short_description: "根据月度党建清单和往月记录生成可交付的党建DOCX材料"
-  default_prompt: "Use $party-building-monthly-docs to generate this month's party-building DOCX records from the work checklist and previous examples."
+  default_prompt: "Use $party-building-monthly-docs to plan this month's party-building DOCX records from the work checklist, select historical templates, generate the documents, and verify every page."
