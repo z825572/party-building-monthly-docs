@@ -188,6 +188,11 @@ def cell_text(sheet, row_number: int, column: int | None) -> str:
 
 def extract_activities(sheet) -> list[dict]:
     columns = find_header(sheet)
+    mapped_columns = {
+        column
+        for key, column in columns.items()
+        if key != "header_row" and isinstance(column, int)
+    }
     activities = []
     sequence = 0
     for row_number in range(columns["header_row"] + 1, sheet.max_row + 1):
@@ -217,6 +222,12 @@ def extract_activities(sheet) -> list[dict]:
                     sheet, row_number, columns.get("requirements")
                 ),
                 "notes": cell_text(sheet, row_number, columns.get("notes")),
+                "extra_values": [
+                    as_text(sheet.cell(row_number, column).value)
+                    for column in range(1, sheet.max_column + 1)
+                    if column not in mapped_columns
+                    and as_text(sheet.cell(row_number, column).value)
+                ],
             }
         )
     return activities

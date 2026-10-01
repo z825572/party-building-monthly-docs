@@ -20,5 +20,9 @@ venv/
 
 outputs/
 specs/
+party-building.local.json
 .DS_Store
 Thumbs.db
+
+!templates/
+!templates/standard-party-template.docx

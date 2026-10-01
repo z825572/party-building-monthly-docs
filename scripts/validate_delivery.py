@@ -138,11 +138,16 @@ def validate_delivery(
     branch: str,
     expected_count: int | None,
     plan_path: Path | None,
+    expected_names_override: list[str] | None = None,
 ) -> dict:
     files = find_docx(directory)
     errors = []
     warnings = []
-    expected_names = load_expected_names(plan_path) if plan_path else []
+    expected_names = (
+        load_expected_names(plan_path)
+        if plan_path
+        else list(expected_names_override or [])
+    )
 
     if expected_count is not None and len(files) != expected_count:
         errors.append(
